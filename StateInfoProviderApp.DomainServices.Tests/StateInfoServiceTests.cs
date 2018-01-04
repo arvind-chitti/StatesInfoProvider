@@ -4,6 +4,7 @@ using StatesInfoProviderApp.DomainServices.Implementation;
 using StatesInfoProviderApp.Common.Exceptions;
 using StatesInfoProviderApp.Common.Resources;
 using Moq;
+using System.Net;
 
 namespace StateInfoProviderApp.DomainServices.Tests
 {
@@ -69,7 +70,38 @@ namespace StateInfoProviderApp.DomainServices.Tests
 			var result = stateInfoService.GetStateInfo(null)?.name;
 
 			// ASSERT
-			Assert.AreEqual("Guam", result);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(DomainServiceException), Constants.Logging.Message.IssueWithRESTFulService)]
+		public void GetStateInfo_IssueWithRESTFulService_ShouldThrowDomainServiceException()
+		{
+			// ARRANGE
+			var input = "gUaM";
+			MockGatewayService.Setup(x => x.GetStatesInfo()).Throws<WebException>();
+			var stateInfoService = new StateInfoService(MockGatewayService.Object);
+			stateInfoService.LoggingService = MockLoggingService.Object;
+
+			// ACT
+			var result = stateInfoService.GetStateInfo(input)?.name;
+
+			// ASSERT
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(DomainServiceException), Constants.Logging.Message.IssueWithRESTFulService)]
+		public void GetStateInfo_GatewayServiceException_ShouldThrowDomainServiceException()
+		{
+			// ARRANGE
+			var input = "gUaM";
+			MockGatewayService.Setup(x => x.GetStatesInfo()).Throws<GatewayServiceException>();
+			var stateInfoService = new StateInfoService(MockGatewayService.Object);
+			stateInfoService.LoggingService = MockLoggingService.Object;
+
+			// ACT
+			var result = stateInfoService.GetStateInfo(input)?.name;
+
+			// ASSERT
 		}
 	}
 }

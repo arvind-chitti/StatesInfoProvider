@@ -10,6 +10,11 @@ namespace StatesInfoProviderApp.Common.Exceptions
 	{
 		public readonly Exception _exception;
 
+		public GatewayServiceException()
+		{
+
+		}
+
 		public GatewayServiceException(Exception exception, string errorMessage)
 		{
 			_exception = exception;
